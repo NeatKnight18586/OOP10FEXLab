@@ -5,132 +5,18 @@ namespace HeavensKarinderya.UI;
 
 public class KioskForm : Form
 {
-    static readonly Color Gold = Color.FromArgb(212, 160, 23);
-
-    readonly FlowLayoutPanel _sidebar = new()
-    {
-        Dock = DockStyle.Left,
-        Width = 210,
-        BackColor = Color.White,
-        FlowDirection = FlowDirection.TopDown,
-        WrapContents = false,
-        Padding = new Padding(10)
-    };
-    readonly FlowLayoutPanel _meals = new()
-    {
-        Dock = DockStyle.Fill,
-        AutoScroll = true,
-        Padding = new Padding(12)
-    };
-    List<MenuMeal> _catalog = new();
-    readonly ComboBox _cboMeals = new()
-    {
-        Name = "cboMeals",
-        Dock = DockStyle.Fill,
-        DropDownStyle = ComboBoxStyle.DropDownList,
-        Font = new Font("Segoe UI", 11),
-        DisplayMember = nameof(MenuMeal.Name),
-        AccessibleName = "Selected meal"
-    };
-    readonly Button _addOrder = Theme.Action("ADD ORDER", Theme.Red);
-
-    readonly Dictionary<string, OrderItem> _cart = new();
-    readonly FlowLayoutPanel _cartLines = new()
-    {
-        Dock = DockStyle.Fill,
-        FlowDirection = FlowDirection.TopDown,
-        WrapContents = false,
-        AutoScroll = true
-    };
-    readonly Label _total = new()
-    {
-        Text = "Total: " + Theme.Pesos(0),
-        Dock = DockStyle.Bottom,
-        Height = 55,
-        Font = new Font("Segoe UI", 18, FontStyle.Bold),
-        ForeColor = Theme.Red,
-        TextAlign = ContentAlignment.MiddleCenter
-    };
+    private List<MenuMeal> _catalog = new();
+    private readonly Dictionary<string, OrderItem> _cart = new();
+    private readonly Dictionary<string, Image?> _photos = new();
+    private static readonly Size PhotoSize = new(230, 130);
 
     public KioskForm()
     {
-        Text = "Heaven's Karinderya - Kiosk";
-        ClientSize = new Size(1200, 800);
-        StartPosition = FormStartPosition.CenterScreen;
-        BackColor = Theme.Cream;
-
-        var header = new Label
-        {
-            Text = "Heaven's Karinderya",
-            Dock = DockStyle.Top,
-            Height = 80,
-            BackColor = Theme.Red,
-            ForeColor = Gold,
-            Font = new Font("Georgia", 28, FontStyle.Bold),
-            TextAlign = ContentAlignment.MiddleCenter
-        };
-        var cart = new TableLayoutPanel
-        {
-            Dock = DockStyle.Right,
-            Width = 360,
-            BackColor = Color.White,
-            Padding = new Padding(12),
-            ColumnCount = 1,
-            RowCount = 5
-        };
-        cart.RowStyles.Add(new RowStyle(SizeType.Absolute, 56));
-        cart.RowStyles.Add(new RowStyle(SizeType.Absolute, 130));
-        cart.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-        cart.RowStyles.Add(new RowStyle(SizeType.Absolute, 65));
-        cart.RowStyles.Add(new RowStyle(SizeType.Absolute, 68));
-
-        var cartTitle = new Label
-        {
-            Text = "YOUR ORDER",
-            Dock = DockStyle.Fill,
-            Font = new Font("Segoe UI", 18, FontStyle.Bold),
-            ForeColor = Theme.Ink,
-            TextAlign = ContentAlignment.MiddleCenter
-        };
-
-        var chooseMeal = new TableLayoutPanel { Dock = DockStyle.Fill, RowCount = 3, Padding = new Padding(0, 0, 0, 8) };
-        chooseMeal.RowStyles.Add(new RowStyle(SizeType.Absolute, 25));
-        chooseMeal.RowStyles.Add(new RowStyle(SizeType.Absolute, 43));
-        chooseMeal.RowStyles.Add(new RowStyle(SizeType.Absolute, 51));
-        var comboLabel = new Label
-        {
-            Text = "CURRENT SELECTED ITEM",
-            Dock = DockStyle.Fill,
-            Font = new Font("Segoe UI", 9, FontStyle.Bold),
-            ForeColor = Theme.Ink
-        };
-        _addOrder.Dock = DockStyle.Fill;
-        _addOrder.Enabled = false;
-        Theme.Flat(_addOrder);
-        _cboMeals.SelectedIndexChanged += (_, _) => _addOrder.Enabled = _cboMeals.SelectedItem is MenuMeal;
+        InitializeComponent();
+        _cboMeals.SelectedIndexChanged += (_, _) =>
+            _addOrder.Enabled = _cboMeals.SelectedItem is MenuMeal;
         _addOrder.Click += (_, _) => AddSelectedMeal();
-        chooseMeal.Controls.Add(comboLabel, 0, 0);
-        chooseMeal.Controls.Add(_cboMeals, 0, 1);
-        chooseMeal.Controls.Add(_addOrder, 0, 2);
-
-        var placeOrder = Theme.Action("PLACE ORDER", Theme.Green);
-        placeOrder.Dock = DockStyle.Fill;
-        Theme.Flat(placeOrder);
-        placeOrder.Click += (_, _) => PlaceOrder();
-
-        _cartLines.Dock = DockStyle.Fill;
-        _total.Dock = DockStyle.Fill;
-        cart.Controls.Add(cartTitle, 0, 0);
-        cart.Controls.Add(chooseMeal, 0, 1);
-        cart.Controls.Add(_cartLines, 0, 2);
-        cart.Controls.Add(_total, 0, 3);
-        cart.Controls.Add(placeOrder, 0, 4);
-
-        Controls.Add(_meals);
-        Controls.Add(_sidebar);
-        Controls.Add(cart);
-        Controls.Add(header);
-
+        _placeOrder.Click += (_, _) => PlaceOrder();
         Shown += (_, _) => LoadMeals();
     }
 
@@ -222,8 +108,6 @@ public class KioskForm : Form
     }
 
     // Food photo from Data/Images. Keeps the emoji placeholder if the photo is missing.
-    readonly Dictionary<string, Image?> _photos = new();
-    static readonly Size PhotoSize = new(230, 130);
 
     Control MakePhoto(MenuMeal meal)
     {

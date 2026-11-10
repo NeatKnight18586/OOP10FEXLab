@@ -882,7 +882,7 @@ partial class KioskForm
         orderRow1.Name = "orderRow1";
         orderRow1.Size = new Size(300, 85);
         orderRow1.Margin = new Padding(0, 0, 0, 8);
-        orderRow1.Visible = false;
+        orderRow1.Visible = true;
         orderText1.Name = "orderText1";
         orderText1.Text = "Meal name and price";
         orderText1.Dock = DockStyle.Top;
@@ -915,7 +915,7 @@ partial class KioskForm
         orderRow2.Name = "orderRow2";
         orderRow2.Size = new Size(300, 85);
         orderRow2.Margin = new Padding(0, 0, 0, 8);
-        orderRow2.Visible = false;
+        orderRow2.Visible = true;
         orderText2.Name = "orderText2";
         orderText2.Text = "Meal name and price";
         orderText2.Dock = DockStyle.Top;
@@ -948,7 +948,7 @@ partial class KioskForm
         orderRow3.Name = "orderRow3";
         orderRow3.Size = new Size(300, 85);
         orderRow3.Margin = new Padding(0, 0, 0, 8);
-        orderRow3.Visible = false;
+        orderRow3.Visible = true;
         orderText3.Name = "orderText3";
         orderText3.Text = "Meal name and price";
         orderText3.Dock = DockStyle.Top;
@@ -981,7 +981,7 @@ partial class KioskForm
         orderRow4.Name = "orderRow4";
         orderRow4.Size = new Size(300, 85);
         orderRow4.Margin = new Padding(0, 0, 0, 8);
-        orderRow4.Visible = false;
+        orderRow4.Visible = true;
         orderText4.Name = "orderText4";
         orderText4.Text = "Meal name and price";
         orderText4.Dock = DockStyle.Top;
@@ -1014,7 +1014,7 @@ partial class KioskForm
         orderRow5.Name = "orderRow5";
         orderRow5.Size = new Size(300, 85);
         orderRow5.Margin = new Padding(0, 0, 0, 8);
-        orderRow5.Visible = false;
+        orderRow5.Visible = true;
         orderText5.Name = "orderText5";
         orderText5.Text = "Meal name and price";
         orderText5.Dock = DockStyle.Top;
@@ -1047,7 +1047,7 @@ partial class KioskForm
         orderRow6.Name = "orderRow6";
         orderRow6.Size = new Size(300, 85);
         orderRow6.Margin = new Padding(0, 0, 0, 8);
-        orderRow6.Visible = false;
+        orderRow6.Visible = true;
         orderText6.Name = "orderText6";
         orderText6.Text = "Meal name and price";
         orderText6.Dock = DockStyle.Top;
@@ -1080,7 +1080,7 @@ partial class KioskForm
         orderRow7.Name = "orderRow7";
         orderRow7.Size = new Size(300, 85);
         orderRow7.Margin = new Padding(0, 0, 0, 8);
-        orderRow7.Visible = false;
+        orderRow7.Visible = true;
         orderText7.Name = "orderText7";
         orderText7.Text = "Meal name and price";
         orderText7.Dock = DockStyle.Top;
@@ -1113,7 +1113,7 @@ partial class KioskForm
         orderRow8.Name = "orderRow8";
         orderRow8.Size = new Size(300, 85);
         orderRow8.Margin = new Padding(0, 0, 0, 8);
-        orderRow8.Visible = false;
+        orderRow8.Visible = true;
         orderText8.Name = "orderText8";
         orderText8.Text = "Meal name and price";
         orderText8.Dock = DockStyle.Top;
@@ -1146,7 +1146,7 @@ partial class KioskForm
         orderRow9.Name = "orderRow9";
         orderRow9.Size = new Size(300, 85);
         orderRow9.Margin = new Padding(0, 0, 0, 8);
-        orderRow9.Visible = false;
+        orderRow9.Visible = true;
         orderText9.Name = "orderText9";
         orderText9.Text = "Meal name and price";
         orderText9.Dock = DockStyle.Top;
@@ -1179,7 +1179,7 @@ partial class KioskForm
         orderRow10.Name = "orderRow10";
         orderRow10.Size = new Size(300, 85);
         orderRow10.Margin = new Padding(0, 0, 0, 8);
-        orderRow10.Visible = false;
+        orderRow10.Visible = true;
         orderText10.Name = "orderText10";
         orderText10.Text = "Meal name and price";
         orderText10.Dock = DockStyle.Top;

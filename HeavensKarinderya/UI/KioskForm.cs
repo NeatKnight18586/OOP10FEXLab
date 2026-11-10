@@ -17,6 +17,21 @@ public partial class KioskForm : Form
             _addOrder.Enabled = _cboMeals.SelectedItem is MenuMeal;
         _addOrder.Click += (_, _) => AddSelectedMeal();
         _placeOrder.Click += (_, _) => PlaceOrder();
+        for (int i = 0; i < _orderRows.Length; i++)
+        {
+            _orderMinusButtons[i].Click += (_, _) =>
+            {
+                if (((Button)_).Tag is string id) ChangeQuantity(id, -1);
+            };
+            _orderPlusButtons[i].Click += (_, _) =>
+            {
+                if (((Button)_).Tag is string id) ChangeQuantity(id, 1);
+            };
+            _orderRemoveButtons[i].Click += (_, _) =>
+            {
+                if (((Button)_).Tag is string id) RemoveMeal(id);
+            };
+        }
         Shown += (_, _) => LoadMeals();
     }
 
@@ -153,47 +168,20 @@ public partial class KioskForm : Form
 
     void RefreshCart()
     {
-        _cartLines.Controls.Clear();
-        foreach (var item in _cart.Values)
-            _cartLines.Controls.Add(MakeCartLine(item));
+        var items = _cart.Values.ToArray();
+        for (int i = 0; i < _orderRows.Length; i++)
+        {
+            bool hasItem = i < items.Length;
+            _orderRows[i].Visible = hasItem;
+            if (!hasItem) continue;
+            var item = items[i];
+            _orderTexts[i].Text = item.Name + "\\n" + Theme.Pesos(item.LineTotal);
+            _orderQuantities[i].Text = item.Quantity.ToString();
+            _orderMinusButtons[i].Tag = item.MealId;
+            _orderPlusButtons[i].Tag = item.MealId;
+            _orderRemoveButtons[i].Tag = item.MealId;
+        }
         _total.Text = "Total: " + Theme.Pesos(_cart.Values.Sum(i => i.LineTotal));
-    }
-
-    Panel MakeCartLine(OrderItem item)
-    {
-        var id = item.MealId;
-        var line = new Panel { Size = new Size(300, 85), Margin = new Padding(0, 0, 0, 8) };
-
-        var minus = new Button { Text = "-", Size = new Size(40, 32), Location = new Point(0, 48) };
-        var qty = new Label
-        {
-            Text = item.Quantity.ToString(),
-            Size = new Size(40, 32),
-            Location = new Point(45, 48),
-            Font = new Font("Segoe UI", 12, FontStyle.Bold),
-            TextAlign = ContentAlignment.MiddleCenter
-        };
-        var plus = new Button { Text = "+", Size = new Size(40, 32), Location = new Point(90, 48) };
-        var remove = new Button { Text = "Remove", Size = new Size(90, 32), Location = new Point(150, 48) };
-
-        minus.Click += (_, _) => ChangeQuantity(id, -1);
-        plus.Click += (_, _) => ChangeQuantity(id, 1);
-        remove.Click += (_, _) => RemoveMeal(id);
-
-        var text = new Label
-        {
-            Text = item.Name + "\n" + Theme.Pesos(item.LineTotal),
-            Dock = DockStyle.Top,
-            Height = 44,
-            Font = new Font("Segoe UI", 10, FontStyle.Bold)
-        };
-
-        line.Controls.Add(minus);
-        line.Controls.Add(qty);
-        line.Controls.Add(plus);
-        line.Controls.Add(remove);
-        line.Controls.Add(text);
-        return line;
     }
 
     void PlaceOrder()

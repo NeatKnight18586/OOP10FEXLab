@@ -1,0 +1,52 @@
+[
+  {
+    "mealId": "M01",
+    "name": "Chicken Adobo Meal",
+    "image": "M01_chicken_adobo.jpg"
+  },
+  {
+    "mealId": "M02",
+    "name": "Pork Sinigang Meal",
+    "image": "M02_pork_sinigang.jpg"
+  },
+  {
+    "mealId": "M03",
+    "name": "Bicol Express Meal",
+    "image": "M03_bicol_express.jpg"
+  },
+  {
+    "mealId": "M04",
+    "name": "Tapsilog",
+    "image": "M04_tapsilog.jpg"
+  },
+  {
+    "mealId": "M05",
+    "name": "Tocilog",
+    "image": "M05_tocilog.jpg"
+  },
+  {
+    "mealId": "M06",
+    "name": "Longsilog",
+    "image": "M06_longsilog.jpg"
+  },
+  {
+    "mealId": "M07",
+    "name": "Pancit Canton",
+    "image": "M07_pancit_canton.jpg"
+  },
+  {
+    "mealId": "M08",
+    "name": "Lumpiang Shanghai",
+    "image": "M08_lumpiang_shanghai.jpg"
+  },
+  {
+    "mealId": "M09",
+    "name": "Iced Tea",
+    "image": "M09_iced_tea.jpg"
+  },
+  {
+    "mealId": "M10",
+    "name": "Calamansi Juice",
+    "image": "M10_calamansi_juice.jpg"
+  }
+]

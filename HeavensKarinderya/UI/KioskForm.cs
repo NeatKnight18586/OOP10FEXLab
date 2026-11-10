@@ -1,21 +1,8 @@
-﻿using HeavensKarinderya.Models;
+using HeavensKarinderya.Models;
 using HeavensKarinderya.Services;
 
 namespace HeavensKarinderya.UI;
 
-<<<<<<< HEAD
-public partial class KioskForm : Form
-{
-    List<MenuMeal> _catalog = new();
-    readonly Dictionary<string, OrderItem> _cart = new();
-
-    public KioskForm()
-    {
-        InitializeComponent();
-    }
-
-    private void KioskForm_Load(object? sender, EventArgs e)
-=======
 public class KioskForm : Form
 {
     static readonly Color Gold = Color.FromArgb(212, 160, 23);
@@ -106,7 +93,6 @@ public class KioskForm : Form
     }
 
     void LoadMeals()
->>>>>>> origin/main
     {
         try { _catalog = MenuCatalog.Load(); }
         catch (Exception ex)
@@ -119,41 +105,18 @@ public class KioskForm : Form
         foreach (var name in names)
         {
             var category = name;
-<<<<<<< HEAD
-            var button = new Button { Text = category, Size = new Size(180, 55) };
-            button.Click += (_, _) => ShowCategory(category);
-            flpCategories.Controls.Add(button);
-=======
             var button = Theme.Action(category, Theme.Ink);
             button.Size = new Size(185, 60);
             button.Margin = new Padding(0, 0, 0, 8);
             Theme.Flat(button);
             button.Click += (_, _) => ShowCategory(category);
             _sidebar.Controls.Add(button);
->>>>>>> origin/main
         }
         ShowCategory("All");
     }
 
     void ShowCategory(string category)
     {
-<<<<<<< HEAD
-        flpMeals.Controls.Clear();
-        foreach (var meal in _catalog.Where(m => category == "All" || m.Category == category))
-        {
-            var button = new Button
-            {
-                Text = $"{meal.Icon} {meal.Name}\n{meal.Description}\n₱{meal.Price:N2}",
-                Size = new Size(220, 120)
-            };
-            button.Click += (_, _) => AddMeal(meal);
-            flpMeals.Controls.Add(button);
-        }
-    }
-
-    void AddMeal(MenuMeal meal)
-    {
-=======
         _meals.Controls.Clear();
         foreach (var meal in _catalog.Where(m => category == "All" || m.Category == category))
             _meals.Controls.Add(MakeCard(meal));
@@ -269,7 +232,6 @@ public class KioskForm : Form
 
     void AddMeal(MenuMeal meal)
     {
->>>>>>> origin/main
         if (_cart.TryGetValue(meal.Id, out var item))
             item.Quantity++;
         else
@@ -283,46 +245,6 @@ public class KioskForm : Form
         RefreshCart();
     }
 
-<<<<<<< HEAD
-    void RefreshCart()
-    {
-        var selected = lstCart.SelectedIndex;
-        lstCart.Items.Clear();
-        foreach (var item in _cart.Values)
-            lstCart.Items.Add($"{item.Quantity}x {item.Name}  ₱{item.LineTotal:N2}");
-        if (selected >= 0 && selected < lstCart.Items.Count)
-            lstCart.SelectedIndex = selected;
-        lblTotal.Text = $"Total: ₱{_cart.Values.Sum(i => i.LineTotal):N2}";
-    }
-
-    void ChangeSelected(int change)
-    {
-        if (lstCart.SelectedIndex < 0) return;
-        var item = _cart.Values.ElementAt(lstCart.SelectedIndex);
-        item.Quantity += change;
-        if (item.Quantity <= 0) _cart.Remove(item.MealId);
-        RefreshCart();
-    }
-
-    private void btnMinus_Click(object? sender, EventArgs e)
-    {
-        ChangeSelected(-1);
-    }
-
-    private void btnPlus_Click(object? sender, EventArgs e)
-    {
-        ChangeSelected(1);
-    }
-
-    private void btnRemove_Click(object? sender, EventArgs e)
-    {
-        if (lstCart.SelectedIndex < 0) return;
-        _cart.Remove(_cart.Values.ElementAt(lstCart.SelectedIndex).MealId);
-        RefreshCart();
-    }
-
-    private void btnPlaceOrder_Click(object? sender, EventArgs e)
-=======
     void ChangeQuantity(string mealId, int change)
     {
         var item = _cart[mealId];
@@ -383,7 +305,6 @@ public class KioskForm : Form
     }
 
     void PlaceOrder()
->>>>>>> origin/main
     {
         if (_cart.Count == 0)
         {
@@ -393,17 +314,10 @@ public class KioskForm : Form
 
         try
         {
-<<<<<<< HEAD
-            var order = TransactionStore.PlaceOrder(_cart.Values.ToList());
-            MessageBox.Show(
-                $"ORDER PLACED!\n\nYour number is #{order.Number}\n\nTotal: ₱{order.Total:N2}\n\nPlease watch the queue monitor.",
-                "Order Confirmed");
-=======
             var items = _cart.Values.ToList();
             if (!SaveToDatabase(items)) return;
             var order = TransactionStore.PlaceOrder(items);
             ShowConfirmation(order);
->>>>>>> origin/main
             _cart.Clear();
             RefreshCart();
         }
@@ -413,11 +327,6 @@ public class KioskForm : Form
         }
     }
 
-<<<<<<< HEAD
-    private void lstCart_SelectedIndexChanged(object sender, EventArgs e)
-    {
-
-=======
     // Saves the order to the instructor's transactions_tbl before the order number is issued.
     // Returns false when the customer should stay on the cart.
     bool SaveToDatabase(List<OrderItem> items)
@@ -508,6 +417,5 @@ public class KioskForm : Form
         dialog.Controls.Add(number);
         dialog.Controls.Add(heading);
         dialog.ShowDialog(this);
->>>>>>> origin/main
     }
 }

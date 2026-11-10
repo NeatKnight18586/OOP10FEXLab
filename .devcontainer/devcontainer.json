@@ -1,0 +1,10 @@
+{
+  "name": "Heaven's Karinderya",
+  "image": "mcr.microsoft.com/devcontainers/dotnet:1-10.0-bookworm",
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-dotnettools.csharp", "ms-dotnettools.csdevkit"]
+    }
+  },
+  "postCreateCommand": "dotnet --info && dotnet restore HeavensKarinderya/HeavensKarinderya.csproj"
+}

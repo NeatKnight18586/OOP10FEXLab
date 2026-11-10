@@ -46,7 +46,8 @@ public partial class KioskForm : Form
                 if (((Button)sender!).Tag is string id) RemoveMeal(id);
             };
         }
-        RefreshCart();
+        if (System.ComponentModel.LicenseManager.UsageMode != System.ComponentModel.LicenseUsageMode.Designtime)
+            RefreshCart();
         Shown += (_, _) => LoadMeals();
     }
 

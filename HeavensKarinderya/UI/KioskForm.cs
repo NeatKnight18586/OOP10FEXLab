@@ -32,6 +32,7 @@ public partial class KioskForm : Form
                 if (((Button)sender!).Tag is string id) RemoveMeal(id);
             };
         }
+        RefreshCart();
         Shown += (_, _) => LoadMeals();
     }
 

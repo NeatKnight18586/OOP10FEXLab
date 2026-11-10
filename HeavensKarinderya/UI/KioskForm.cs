@@ -265,7 +265,7 @@ public class KioskForm : Form
         try
         {
             var order = TransactionStore.PlaceOrder(_cart.Values.ToList());
-            MessageBox.Show($"Order #{order.Number} placed.", "Order Confirmed");
+            ShowConfirmation(order);
             _cart.Clear();
             RefreshCart();
         }
@@ -273,5 +273,66 @@ public class KioskForm : Form
         {
             MessageBox.Show(ex.Message, "Order Error");
         }
+    }
+
+    void ShowConfirmation(OrderRecord order)
+    {
+        using var dialog = new Form
+        {
+            Text = "Order Confirmed",
+            ClientSize = new Size(480, 520),
+            StartPosition = FormStartPosition.CenterParent,
+            FormBorderStyle = FormBorderStyle.FixedDialog,
+            MaximizeBox = false,
+            MinimizeBox = false,
+            BackColor = Theme.Cream
+        };
+
+        var done = Theme.Action("DONE", Theme.Green);
+        done.Dock = DockStyle.Bottom;
+        done.Height = 65;
+        Theme.Flat(done);
+        done.Click += (_, _) => dialog.Close();
+
+        var total = new Label
+        {
+            Text = "Total: " + Theme.Pesos(order.Total),
+            Dock = DockStyle.Bottom,
+            Height = 50,
+            Font = new Font("Segoe UI", 16, FontStyle.Bold),
+            TextAlign = ContentAlignment.MiddleCenter
+        };
+        var items = new Label
+        {
+            Text = string.Join("\n", order.Items.Select(i => $"{i.Quantity}x {i.Name}"))
+                   + "\n\nPlease watch the queue monitor.",
+            Dock = DockStyle.Fill,
+            Font = new Font("Segoe UI", 13),
+            TextAlign = ContentAlignment.MiddleCenter
+        };
+        var number = new Label
+        {
+            Text = "#" + order.Number,
+            Dock = DockStyle.Top,
+            Height = 110,
+            Font = new Font("Segoe UI", 54, FontStyle.Bold),
+            ForeColor = Theme.Red,
+            TextAlign = ContentAlignment.MiddleCenter
+        };
+        var heading = new Label
+        {
+            Text = "ORDER PLACED! Your number is:",
+            Dock = DockStyle.Top,
+            Height = 60,
+            Font = new Font("Segoe UI", 16, FontStyle.Bold),
+            TextAlign = ContentAlignment.MiddleCenter
+        };
+
+        dialog.Controls.Add(items);
+        dialog.Controls.Add(total);
+        dialog.Controls.Add(done);
+        dialog.Controls.Add(number);
+        dialog.Controls.Add(heading);
+        dialog.ShowDialog(this);
     }
 }

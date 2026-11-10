@@ -29,17 +29,20 @@ public partial class KioskForm : Form
             return;
         }
 
-        var names = new[] { "All" }.Concat(_catalog.Select(m => m.Category).Distinct());
-        foreach (var name in names)
+        foreach (var button in _categoryButtons)
         {
-            var category = name;
-            var button = Theme.Action(category, Theme.Ink);
-            button.Size = new Size(185, 60);
-            button.Margin = new Padding(0, 0, 0, 8);
-            Theme.Flat(button);
+            var category = button.Tag?.ToString() ?? "All";
             button.Click += (_, _) => ShowCategory(category);
-            _sidebar.Controls.Add(button);
         }
+        for (int i = 0; i < _mealCards.Length; i++)
+        {
+            int index = i;
+            _mealButtons[i].Click += (_, _) =>
+            {
+                if (index < _catalog.Count) SelectMeal(_catalog[index]);
+            };
+        }
+        BindMealCards();
         _cboMeals.BeginUpdate();
         _cboMeals.Items.Clear();
         foreach (var meal in _catalog)
@@ -49,91 +52,31 @@ public partial class KioskForm : Form
         ShowCategory("All");
     }
 
+    void BindMealCards()
+    {
+        for (int i = 0; i < _mealCards.Length; i++)
+        {
+            var visible = i < _catalog.Count;
+            _mealCards[i].Visible = visible;
+            if (!visible) continue;
+            var meal = _catalog[i];
+            _mealNames[i].Text = meal.Name;
+            _mealPrices[i].Text = Theme.Pesos(meal.Price);
+            _mealDescriptions[i].Text = meal.Description;
+            var photo = LoadPhoto(meal.Id);
+            _photos[meal.Id] = photo;
+            _mealPhotos[i].Image = photo;
+            _mealPhotos[i].Visible = photo is not null;
+            _mealIcons[i].Text = meal.Icon;
+            _mealIcons[i].Visible = photo is null;
+        }
+    }
+
     void ShowCategory(string category)
     {
-        _meals.Controls.Clear();
-        foreach (var meal in _catalog.Where(m => category == "All" || m.Category == category))
-            _meals.Controls.Add(MakeCard(meal));
-    }
-
-    Panel MakeCard(MenuMeal meal)
-    {
-        var card = new Panel
-        {
-            Size = new Size(230, 310),
-            BackColor = Color.White,
-            Margin = new Padding(10)
-        };
-
-        var add = Theme.Action("SELECT MEAL", Theme.Red);
-        add.Dock = DockStyle.Bottom;
-        add.Height = 45;
-        Theme.Flat(add);
-        add.Click += (_, _) => SelectMeal(meal);
-
-        var price = new Label
-        {
-            Text = Theme.Pesos(meal.Price),
-            Font = new Font("Segoe UI", 14, FontStyle.Bold),
-            ForeColor = Theme.Red,
-            Dock = DockStyle.Top,
-            Height = 32,
-            TextAlign = ContentAlignment.MiddleCenter
-        };
-        var description = new Label
-        {
-            Text = meal.Description,
-            Font = new Font("Segoe UI", 9),
-            ForeColor = Color.Gray,
-            Dock = DockStyle.Top,
-            Height = 48,
-            TextAlign = ContentAlignment.TopCenter
-        };
-        var name = new Label
-        {
-            Text = meal.Name,
-            Font = new Font("Segoe UI", 12, FontStyle.Bold),
-            Dock = DockStyle.Top,
-            Height = 32,
-            TextAlign = ContentAlignment.MiddleCenter
-        };
-        var icon = MakePhoto(meal);
-
-        card.Controls.Add(add);
-        card.Controls.Add(price);
-        card.Controls.Add(description);
-        card.Controls.Add(name);
-        card.Controls.Add(icon);
-        return card;
-    }
-
-    // Food photo from Data/Images. Keeps the emoji placeholder if the photo is missing.
-
-    Control MakePhoto(MenuMeal meal)
-    {
-        if (!_photos.TryGetValue(meal.Id, out var photo))
-        {
-            photo = LoadPhoto(meal.Id);
-            _photos[meal.Id] = photo;
-        }
-
-        if (photo is null)
-            return new Label
-            {
-                Text = meal.Icon,
-                Font = new Font("Segoe UI Emoji", 36),
-                Dock = DockStyle.Top,
-                Height = PhotoSize.Height,
-                TextAlign = ContentAlignment.MiddleCenter
-            };
-
-        return new PictureBox
-        {
-            Image = photo,
-            Dock = DockStyle.Top,
-            Height = PhotoSize.Height,
-            SizeMode = PictureBoxSizeMode.StretchImage
-        };
+        for (int i = 0; i < _mealCards.Length; i++)
+            _mealCards[i].Visible = i < _catalog.Count &&
+                (category == "All" || _catalog[i].Category == category);
     }
 
     // Loads the photo without locking the file, cropped to fill the card's photo area.

@@ -255,6 +255,7 @@ public sealed class QueueMonitorForm : Form
             _servingPage = 0;
             _nextPageAt = DateTime.Now.AddSeconds(7);
             _staffStatus.Text = "F9 to hide staff controls";
+            _footer.Text = "Pakihintay ang inyong numero sa Now Serving.";
             DrawNumbers();
         }
         catch (Exception ex)
@@ -316,7 +317,7 @@ public sealed class QueueMonitorForm : Form
                 var size = Math.Clamp(Math.Min(byWidth, byHeight), 30f, serving ? 125f : 76f);
                 var text = LabelText(number, size, Black, true);
                 text.Margin = Padding.Empty;
-                grid.Controls.Add(text, i % columns, i / columns);
+                grid.Controls.Add(text, i / rows, i % rows);
             }
         }
         finally { grid.ResumeLayout(true); }

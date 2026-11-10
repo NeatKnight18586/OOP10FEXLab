@@ -23,7 +23,7 @@ Use **Code > Codespaces > Create codespace on main**. The devcontainer supplies 
 | --- | --- |
 | 1 — Mark Jemiel P. Guevarra | Queue Monitor and staff queue controls |
 | 2 — to be completed | Kiosk design, food cards, cart, and order flow |
-| 3 — to be completed | Splash screen, menu and transaction storage, integration and tests |
+| 3 — Sean Caling / LEAD | Splash screen, menu and transaction storage, integration and tests |
 
 See `PRD.md` and `BUILD_PHASES.md` for the requirements and work schedule.
 

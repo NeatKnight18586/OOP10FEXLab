@@ -3,7 +3,7 @@ using HeavensKarinderya.Services;
 
 namespace HeavensKarinderya.UI;
 
-public class KioskForm : Form
+public partial class KioskForm : Form
 {
     private List<MenuMeal> _catalog = new();
     private readonly Dictionary<string, OrderItem> _cart = new();

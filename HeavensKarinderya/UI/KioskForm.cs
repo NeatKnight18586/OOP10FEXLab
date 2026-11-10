@@ -126,7 +126,7 @@ public class KioskForm : Form
     {
         var card = new Panel
         {
-            Size = new Size(230, 260),
+            Size = new Size(230, 310),
             BackColor = Color.White,
             Margin = new Padding(10)
         };
@@ -163,14 +163,7 @@ public class KioskForm : Form
             Height = 32,
             TextAlign = ContentAlignment.MiddleCenter
         };
-        var icon = new Label
-        {
-            Text = meal.Icon,
-            Font = new Font("Segoe UI Emoji", 36),
-            Dock = DockStyle.Top,
-            Height = 80,
-            TextAlign = ContentAlignment.MiddleCenter
-        };
+        var icon = MakePhoto(meal);
 
         card.Controls.Add(add);
         card.Controls.Add(price);
@@ -178,6 +171,63 @@ public class KioskForm : Form
         card.Controls.Add(name);
         card.Controls.Add(icon);
         return card;
+    }
+
+    // Food photo from Data/Images. Keeps the emoji placeholder if the photo is missing.
+    readonly Dictionary<string, Image?> _photos = new();
+    static readonly Size PhotoSize = new(230, 130);
+
+    Control MakePhoto(MenuMeal meal)
+    {
+        if (!_photos.TryGetValue(meal.Id, out var photo))
+        {
+            photo = LoadPhoto(meal.Id);
+            _photos[meal.Id] = photo;
+        }
+
+        if (photo is null)
+            return new Label
+            {
+                Text = meal.Icon,
+                Font = new Font("Segoe UI Emoji", 36),
+                Dock = DockStyle.Top,
+                Height = PhotoSize.Height,
+                TextAlign = ContentAlignment.MiddleCenter
+            };
+
+        return new PictureBox
+        {
+            Image = photo,
+            Dock = DockStyle.Top,
+            Height = PhotoSize.Height,
+            SizeMode = PictureBoxSizeMode.StretchImage
+        };
+    }
+
+    // Loads the photo without locking the file, cropped to fill the card's photo area.
+    static Image? LoadPhoto(string mealId)
+    {
+        var path = MenuCatalog.ImagePath(mealId);
+        if (path is null) return null;
+        try
+        {
+            using var stream = File.OpenRead(path);
+            using var source = Image.FromStream(stream);
+            var scale = Math.Max(PhotoSize.Width / (float)source.Width, PhotoSize.Height / (float)source.Height);
+            var crop = new SizeF(PhotoSize.Width / scale, PhotoSize.Height / scale);
+            var from = new RectangleF((source.Width - crop.Width) / 2, (source.Height - crop.Height) / 2,
+                crop.Width, crop.Height);
+
+            var photo = new Bitmap(PhotoSize.Width, PhotoSize.Height);
+            using var g = Graphics.FromImage(photo);
+            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+            g.DrawImage(source, new RectangleF(0, 0, PhotoSize.Width, PhotoSize.Height), from, GraphicsUnit.Pixel);
+            return photo;
+        }
+        catch (Exception)
+        {
+            return null;
+        }
     }
 
     void AddMeal(MenuMeal meal)
@@ -264,7 +314,9 @@ public class KioskForm : Form
 
         try
         {
-            var order = TransactionStore.PlaceOrder(_cart.Values.ToList());
+            var items = _cart.Values.ToList();
+            if (!SaveToDatabase(items)) return;
+            var order = TransactionStore.PlaceOrder(items);
             ShowConfirmation(order);
             _cart.Clear();
             RefreshCart();
@@ -272,6 +324,37 @@ public class KioskForm : Form
         catch (Exception ex)
         {
             MessageBox.Show(ex.Message, "Order Error");
+        }
+    }
+
+    // Saves the order to the instructor's transactions_tbl before the order number is issued.
+    // Returns false when the customer should stay on the cart.
+    bool SaveToDatabase(List<OrderItem> items)
+    {
+        while (true)
+        {
+            try
+            {
+                Cursor = Cursors.WaitCursor;
+                DatabaseStore.SaveTransaction(items);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Cursor = Cursors.Default;
+                var choice = MessageBox.Show(
+                    "This order could not be saved to the transaction database.\n\n" + ex.Message +
+                    "\n\nRetry: try the database again." +
+                    "\nIgnore: place the order on this PC only (not saved to the database)." +
+                    "\nAbort: go back to the cart.",
+                    "Database Error", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Warning);
+                if (choice == DialogResult.Ignore) return true;
+                if (choice != DialogResult.Retry) return false;
+            }
+            finally
+            {
+                Cursor = Cursors.Default;
+            }
         }
     }
 

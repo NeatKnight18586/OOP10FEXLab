@@ -23,6 +23,17 @@ public class KioskForm : Form
         Padding = new Padding(12)
     };
     List<MenuMeal> _catalog = new();
+    readonly ComboBox _cboMeals = new()
+    {
+        Name = "cboMeals",
+        Dock = DockStyle.Fill,
+        DropDownStyle = ComboBoxStyle.DropDownList,
+        Font = new Font("Segoe UI", 11),
+        DisplayMember = nameof(MenuMeal.Name),
+        AccessibleName = "Selected meal"
+    };
+    readonly Button _addOrder = Theme.Action("ADD ORDER", Theme.Red);
+
     readonly Dictionary<string, OrderItem> _cart = new();
     readonly FlowLayoutPanel _cartLines = new()
     {
@@ -58,31 +69,62 @@ public class KioskForm : Form
             Font = new Font("Georgia", 28, FontStyle.Bold),
             TextAlign = ContentAlignment.MiddleCenter
         };
-        var cart = new Panel
+        var cart = new TableLayoutPanel
         {
             Dock = DockStyle.Right,
-            Width = 340,
+            Width = 360,
             BackColor = Color.White,
-            Padding = new Padding(10)
+            Padding = new Padding(12),
+            ColumnCount = 1,
+            RowCount = 5
         };
+        cart.RowStyles.Add(new RowStyle(SizeType.Absolute, 56));
+        cart.RowStyles.Add(new RowStyle(SizeType.Absolute, 130));
+        cart.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+        cart.RowStyles.Add(new RowStyle(SizeType.Absolute, 65));
+        cart.RowStyles.Add(new RowStyle(SizeType.Absolute, 68));
+
         var cartTitle = new Label
         {
             Text = "YOUR ORDER",
-            Dock = DockStyle.Top,
-            Height = 50,
+            Dock = DockStyle.Fill,
             Font = new Font("Segoe UI", 18, FontStyle.Bold),
             ForeColor = Theme.Ink,
             TextAlign = ContentAlignment.MiddleCenter
         };
-        cart.Controls.Add(_cartLines);
-        cart.Controls.Add(_total);
+
+        var chooseMeal = new TableLayoutPanel { Dock = DockStyle.Fill, RowCount = 3, Padding = new Padding(0, 0, 0, 8) };
+        chooseMeal.RowStyles.Add(new RowStyle(SizeType.Absolute, 25));
+        chooseMeal.RowStyles.Add(new RowStyle(SizeType.Absolute, 43));
+        chooseMeal.RowStyles.Add(new RowStyle(SizeType.Absolute, 51));
+        var comboLabel = new Label
+        {
+            Text = "CURRENT SELECTED ITEM",
+            Dock = DockStyle.Fill,
+            Font = new Font("Segoe UI", 9, FontStyle.Bold),
+            ForeColor = Theme.Ink
+        };
+        _addOrder.Dock = DockStyle.Fill;
+        _addOrder.Enabled = false;
+        Theme.Flat(_addOrder);
+        _cboMeals.SelectedIndexChanged += (_, _) => _addOrder.Enabled = _cboMeals.SelectedItem is MenuMeal;
+        _addOrder.Click += (_, _) => AddSelectedMeal();
+        chooseMeal.Controls.Add(comboLabel, 0, 0);
+        chooseMeal.Controls.Add(_cboMeals, 0, 1);
+        chooseMeal.Controls.Add(_addOrder, 0, 2);
+
         var placeOrder = Theme.Action("PLACE ORDER", Theme.Green);
-        placeOrder.Dock = DockStyle.Bottom;
-        placeOrder.Height = 65;
+        placeOrder.Dock = DockStyle.Fill;
         Theme.Flat(placeOrder);
         placeOrder.Click += (_, _) => PlaceOrder();
-        cart.Controls.Add(placeOrder);
-        cart.Controls.Add(cartTitle);
+
+        _cartLines.Dock = DockStyle.Fill;
+        _total.Dock = DockStyle.Fill;
+        cart.Controls.Add(cartTitle, 0, 0);
+        cart.Controls.Add(chooseMeal, 0, 1);
+        cart.Controls.Add(_cartLines, 0, 2);
+        cart.Controls.Add(_total, 0, 3);
+        cart.Controls.Add(placeOrder, 0, 4);
 
         Controls.Add(_meals);
         Controls.Add(_sidebar);
@@ -112,6 +154,12 @@ public class KioskForm : Form
             button.Click += (_, _) => ShowCategory(category);
             _sidebar.Controls.Add(button);
         }
+        _cboMeals.BeginUpdate();
+        _cboMeals.Items.Clear();
+        foreach (var meal in _catalog)
+            _cboMeals.Items.Add(meal);
+        _cboMeals.SelectedIndex = -1;
+        _cboMeals.EndUpdate();
         ShowCategory("All");
     }
 
@@ -131,11 +179,11 @@ public class KioskForm : Form
             Margin = new Padding(10)
         };
 
-        var add = Theme.Action("ADD TO ORDER", Theme.Red);
+        var add = Theme.Action("SELECT MEAL", Theme.Red);
         add.Dock = DockStyle.Bottom;
         add.Height = 45;
         Theme.Flat(add);
-        add.Click += (_, _) => AddMeal(meal);
+        add.Click += (_, _) => SelectMeal(meal);
 
         var price = new Label
         {
@@ -228,6 +276,23 @@ public class KioskForm : Form
         {
             return null;
         }
+    }
+
+    // Meal card selects the ComboBox. Add Order is a separate action.
+    void SelectMeal(MenuMeal meal)
+    {
+        _cboMeals.SelectedItem = _catalog.FirstOrDefault(m => m.Id == meal.Id);
+        _cboMeals.Focus();
+    }
+
+    void AddSelectedMeal()
+    {
+        if (_cboMeals.SelectedItem is not MenuMeal meal)
+        {
+            MessageBox.Show("Please select a meal first.", "No Meal Selected");
+            return;
+        }
+        AddMeal(meal);
     }
 
     void AddMeal(MenuMeal meal)

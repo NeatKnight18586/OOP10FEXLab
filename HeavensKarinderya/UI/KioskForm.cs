@@ -19,17 +19,17 @@ public partial class KioskForm : Form
         _placeOrder.Click += (_, _) => PlaceOrder();
         for (int i = 0; i < _orderRows.Length; i++)
         {
-            _orderMinusButtons[i].Click += (_, _) =>
+            _orderMinusButtons[i].Click += (sender, _) =>
             {
-                if (((Button)_).Tag is string id) ChangeQuantity(id, -1);
+                if (((Button)sender!).Tag is string id) ChangeQuantity(id, -1);
             };
-            _orderPlusButtons[i].Click += (_, _) =>
+            _orderPlusButtons[i].Click += (sender, _) =>
             {
-                if (((Button)_).Tag is string id) ChangeQuantity(id, 1);
+                if (((Button)sender!).Tag is string id) ChangeQuantity(id, 1);
             };
-            _orderRemoveButtons[i].Click += (_, _) =>
+            _orderRemoveButtons[i].Click += (sender, _) =>
             {
-                if (((Button)_).Tag is string id) RemoveMeal(id);
+                if (((Button)sender!).Tag is string id) RemoveMeal(id);
             };
         }
         Shown += (_, _) => LoadMeals();

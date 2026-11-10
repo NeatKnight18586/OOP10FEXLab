@@ -379,8 +379,10 @@ public class KioskForm : Form
 
         try
         {
+            var customer = AskCustomerName();
+            if (customer is null) return;
             var items = _cart.Values.ToList();
-            if (!SaveToDatabase(items)) return;
+            if (!SaveToDatabase(items, customer)) return;
             var order = TransactionStore.PlaceOrder(items);
             ShowConfirmation(order);
             _cart.Clear();
@@ -394,14 +396,73 @@ public class KioskForm : Form
 
     // Saves the order to the instructor's transactions_tbl before the order number is issued.
     // Returns false when the customer should stay on the cart.
-    bool SaveToDatabase(List<OrderItem> items)
+    bool _savedToDatabase;
+    bool _nameSavedToDatabase;
+
+    // Asks who the order is for. Returns null if the customer cancels.
+    string? AskCustomerName()
     {
+        using var dialog = new Form
+        {
+            Text = "Customer Name",
+            ClientSize = new Size(440, 230),
+            StartPosition = FormStartPosition.CenterParent,
+            FormBorderStyle = FormBorderStyle.FixedDialog,
+            MaximizeBox = false,
+            MinimizeBox = false,
+            BackColor = Theme.Cream
+        };
+        var prompt = new Label
+        {
+            Text = "Name for this order",
+            Location = new Point(24, 20),
+            Size = new Size(392, 36),
+            Font = new Font("Segoe UI", 16, FontStyle.Bold)
+        };
+        var name = new TextBox
+        {
+            Location = new Point(24, 66),
+            Size = new Size(392, 36),
+            Font = new Font("Segoe UI", 16),
+            MaxLength = 100
+        };
+        var ok = Theme.Action("CONFIRM ORDER", Theme.Green);
+        ok.Location = new Point(24, 130);
+        ok.Size = new Size(250, 60);
+        Theme.Flat(ok);
+        var cancel = Theme.Action("BACK", Theme.Ink);
+        cancel.Location = new Point(290, 130);
+        cancel.Size = new Size(126, 60);
+        Theme.Flat(cancel);
+
+        ok.Click += (_, _) =>
+        {
+            if (string.IsNullOrWhiteSpace(name.Text))
+            {
+                MessageBox.Show("Please type a name for the order.", "Name Needed");
+                return;
+            }
+            dialog.DialogResult = DialogResult.OK;
+        };
+        cancel.DialogResult = DialogResult.Cancel;
+        dialog.AcceptButton = ok;
+        dialog.CancelButton = cancel;
+        dialog.Controls.AddRange(new Control[] { prompt, name, ok, cancel });
+
+        return dialog.ShowDialog(this) == DialogResult.OK ? name.Text.Trim() : null;
+    }
+
+    bool SaveToDatabase(List<OrderItem> items, string customer)
+    {
+        _savedToDatabase = false;
+        _nameSavedToDatabase = false;
         while (true)
         {
             try
             {
                 Cursor = Cursors.WaitCursor;
-                DatabaseStore.SaveTransaction(items);
+                _nameSavedToDatabase = DatabaseStore.SaveTransaction(items, customer);
+                _savedToDatabase = true;
                 return true;
             }
             catch (Exception ex)
@@ -453,7 +514,10 @@ public class KioskForm : Form
         var items = new Label
         {
             Text = string.Join("\n", order.Items.Select(i => $"{i.Quantity}x {i.Name}"))
-                   + "\n\nPlease watch the queue monitor.",
+                   + "\n\nPlease watch the queue monitor.\n\n"
+                   + (_savedToDatabase
+                       ? "Saved to the transaction database" + (_nameSavedToDatabase ? "" : " (name not saved)")
+                       : "NOT saved to the database (this PC only)"),
             Dock = DockStyle.Fill,
             Font = new Font("Segoe UI", 13),
             TextAlign = ContentAlignment.MiddleCenter

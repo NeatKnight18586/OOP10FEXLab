@@ -4,4 +4,4 @@ Repository: OOP10FEXLab
 
 Member 1 (Queue Monitor): Mark Jemiel P. Guevarra
 Member 2 (Kiosk): [ENTER FULL NAME]
-Member 3 (Integration): [ENTER FULL NAME]
+Member 3 (Integration): Sean Caling

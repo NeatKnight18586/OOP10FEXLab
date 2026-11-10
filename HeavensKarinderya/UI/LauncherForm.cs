@@ -73,11 +73,11 @@ public sealed class LauncherForm : Form
         try
         {
             var packages = DatabaseStore.LoadPackages().Count;
-            return (true, $"Database connected: {packages} packages in package_tbl. Orders are saved to transactions_tbl.");
+            return (true, $"Database connected ({DatabaseStore.Describe()}): {packages} packages in package_tbl. Orders are saved to transactions_tbl.");
         }
         catch (Exception ex)
         {
-            return (false, "Database not reachable: " + ex.Message);
+            return (false, $"Database not reachable ({DatabaseStore.Describe()}): " + ex.Message);
         }
     }
 

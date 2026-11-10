@@ -6,3 +6,7 @@
 *.suo
 TestResults/
 *.tmp
+
+# Local test connection string (may contain a password)
+HeavensKarinderya/Data/connection.txt
+.DS_Store

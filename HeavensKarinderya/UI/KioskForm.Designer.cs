@@ -921,14 +921,6 @@ partial class KioskForm
         mealCard10.Controls.Add(mealPhoto10);
         mealCard10.Controls.Add(mealIcon10);
         _meals.Controls.Add(mealCard10);
-        _categoryButtons = new Button[] { categoryButton1, categoryButton2, categoryButton3, categoryButton4, categoryButton5 };
-        _mealCards = new Panel[] { mealCard1, mealCard2, mealCard3, mealCard4, mealCard5, mealCard6, mealCard7, mealCard8, mealCard9, mealCard10 };
-        _mealPhotos = new PictureBox[] { mealPhoto1, mealPhoto2, mealPhoto3, mealPhoto4, mealPhoto5, mealPhoto6, mealPhoto7, mealPhoto8, mealPhoto9, mealPhoto10 };
-        _mealIcons = new Label[] { mealIcon1, mealIcon2, mealIcon3, mealIcon4, mealIcon5, mealIcon6, mealIcon7, mealIcon8, mealIcon9, mealIcon10 };
-        _mealNames = new Label[] { mealName1, mealName2, mealName3, mealName4, mealName5, mealName6, mealName7, mealName8, mealName9, mealName10 };
-        _mealDescriptions = new Label[] { mealDescription1, mealDescription2, mealDescription3, mealDescription4, mealDescription5, mealDescription6, mealDescription7, mealDescription8, mealDescription9, mealDescription10 };
-        _mealPrices = new Label[] { mealPrice1, mealPrice2, mealPrice3, mealPrice4, mealPrice5, mealPrice6, mealPrice7, mealPrice8, mealPrice9, mealPrice10 };
-        _mealButtons = new Button[] { mealSelect1, mealSelect2, mealSelect3, mealSelect4, mealSelect5, mealSelect6, mealSelect7, mealSelect8, mealSelect9, mealSelect10 };
         orderRow1.Name = "orderRow1";
         orderRow1.Size = new Size(300, 85);
         orderRow1.Margin = new Padding(0, 0, 0, 8);
@@ -1259,12 +1251,6 @@ partial class KioskForm
         orderRow10.Controls.Add(orderRemove10);
         orderRow10.Controls.Add(orderText10);
         _cartLines.Controls.Add(orderRow10);
-        _orderRows = new Panel[] { orderRow1, orderRow2, orderRow3, orderRow4, orderRow5, orderRow6, orderRow7, orderRow8, orderRow9, orderRow10 };
-        _orderTexts = new Label[] { orderText1, orderText2, orderText3, orderText4, orderText5, orderText6, orderText7, orderText8, orderText9, orderText10 };
-        _orderQuantities = new Label[] { orderQuantity1, orderQuantity2, orderQuantity3, orderQuantity4, orderQuantity5, orderQuantity6, orderQuantity7, orderQuantity8, orderQuantity9, orderQuantity10 };
-        _orderMinusButtons = new Button[] { orderMinus1, orderMinus2, orderMinus3, orderMinus4, orderMinus5, orderMinus6, orderMinus7, orderMinus8, orderMinus9, orderMinus10 };
-        _orderPlusButtons = new Button[] { orderPlus1, orderPlus2, orderPlus3, orderPlus4, orderPlus5, orderPlus6, orderPlus7, orderPlus8, orderPlus9, orderPlus10 };
-        _orderRemoveButtons = new Button[] { orderRemove1, orderRemove2, orderRemove3, orderRemove4, orderRemove5, orderRemove6, orderRemove7, orderRemove8, orderRemove9, orderRemove10 };
         //
         // KioskForm
         //

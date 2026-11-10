@@ -38,6 +38,8 @@ public sealed partial class QueueMonitorForm : Form
         DoubleBuffered = true;
 
         InitializeComponent();
+        _preparingSlots = new Label[] { preparingNumber1, preparingNumber2, preparingNumber3, preparingNumber4, preparingNumber5, preparingNumber6, preparingNumber7, preparingNumber8 };
+        _servingSlots = new Label[] { servingNumber1, servingNumber2 };
         _callNextButton.Click += (_, _) => MoveOrder(TransactionStore.CallNext, "Preparing");
         _completeButton.Click += (_, _) => MoveOrder(TransactionStore.CompleteOldest, "Now Serving");
         KeyDown += HandleShortcut;

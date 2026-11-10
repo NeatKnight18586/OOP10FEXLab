@@ -1,0 +1,12 @@
+[
+  {"id":"M01","name":"Chicken Adobo Meal","category":"Rice Meals","description":"Chicken adobo with rice","price":115,"icon":"🍗"},
+  {"id":"M02","name":"Pork Sinigang Meal","category":"Rice Meals","description":"Pork in sour tamarind broth with rice","price":135,"icon":"🍲"},
+  {"id":"M03","name":"Bicol Express Meal","category":"Rice Meals","description":"Spicy pork in coconut milk with rice","price":125,"icon":"🍛"},
+  {"id":"M04","name":"Tapsilog","category":"Silog Meals","description":"Beef tapa, egg and garlic rice","price":120,"icon":"🍳"},
+  {"id":"M05","name":"Tocilog","category":"Silog Meals","description":"Pork tocino, egg and garlic rice","price":110,"icon":"🍳"},
+  {"id":"M06","name":"Longsilog","category":"Silog Meals","description":"Longganisa, egg and garlic rice","price":105,"icon":"🍳"},
+  {"id":"M07","name":"Pancit Canton","category":"Merienda","description":"Stir-fried noodles","price":75,"icon":"🍜"},
+  {"id":"M08","name":"Lumpiang Shanghai","category":"Merienda","description":"Six-piece spring rolls","price":85,"icon":"🥟"},
+  {"id":"M09","name":"Iced Tea","category":"Drinks","description":"House iced tea","price":35,"icon":"🥤"},
+  {"id":"M10","name":"Calamansi Juice","category":"Drinks","description":"Fresh citrus juice","price":40,"icon":"🍋"}
+]

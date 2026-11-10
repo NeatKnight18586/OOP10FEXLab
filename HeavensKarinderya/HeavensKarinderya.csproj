@@ -9,5 +9,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Data/menu.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Data/Images/*.jpg" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Data/Images/manifest.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Data/connection.txt" Condition="Exists('Data/connection.txt')" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Same MySQL connector the instructor's DBConProj sample uses. -->
+    <PackageReference Include="MySql.Data" Version="26.10.0" />
   </ItemGroup>
 </Project>

@@ -16,7 +16,13 @@ Open `HeavensKarinderya/HeavensKarinderya.csproj` in Visual Studio 2026 with the
 Use **Code > Codespaces > Create codespace on main**. The devcontainer supplies the .NET 10 SDK and C# extensions for editing source files. Native WinForms UI must be run and tested on Windows; Linux Codespaces cannot show Windows Forms.
 
 ## Data
-`HeavensKarinderya/Data/menu.json` contains the meal catalog. Transactions are written to `%LOCALAPPDATA%/HeavensKarinderya/transactions.json` on Windows. This starter storage works on one computer. The teacher-provided database query and connection code can be integrated afterward.
+`HeavensKarinderya/Data/menu.json` contains the meal catalog, and `Data/Images/` holds a photo for each meal.
+
+Every placed order is saved to the instructor's MySQL database (`fastfooddb`, table `transactions_tbl`), one row per meal ordered. The connection class `Services/DBconnection.cs` is copied unchanged from the instructor's DBConProj sample, and `Services/DatabaseStore.cs` uses the sample's queries. The launcher shows whether the database can be reached.
+
+The order number and queue status are also written to `%LOCALAPPDATA%/HeavensKarinderya/transactions.json`, which the queue monitor reads on the same computer.
+
+To test away from school, run `Data/fastfooddb_local.sql` on a local MySQL and put its connection string in `Data/connection.txt`, for example `Server=localhost;Port=3306;Database=fastfooddb;Uid=root;Pwd=;`. That file is ignored by git.
 
 ## Responsibilities
 | Member | Focus |

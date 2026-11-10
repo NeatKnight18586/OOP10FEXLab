@@ -27,4 +27,40 @@ public static class MenuCatalog
 
         return meals;
     }
+
+    public static string ImageFolder => Path.Combine(AppContext.BaseDirectory, "Data", "Images");
+
+    private static Dictionary<string, string>? _imageFiles;
+
+    // Photo for a meal, from Data/Images/manifest.json (falls back to "<id>_*.jpg").
+    // Returns null when there is no photo, so the kiosk can keep its placeholder.
+    public static string? ImagePath(string mealId)
+    {
+        _imageFiles ??= ReadManifest();
+        if (_imageFiles.TryGetValue(mealId, out var file))
+        {
+            var path = Path.Combine(ImageFolder, file);
+            if (File.Exists(path)) return path;
+        }
+        if (!Directory.Exists(ImageFolder)) return null;
+        return Directory.EnumerateFiles(ImageFolder, mealId + "_*.jpg").FirstOrDefault();
+    }
+
+    private static Dictionary<string, string> ReadManifest()
+    {
+        var map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var path = Path.Combine(ImageFolder, "manifest.json");
+        if (!File.Exists(path)) return map;
+        try
+        {
+            using var doc = JsonDocument.Parse(File.ReadAllText(path));
+            foreach (var entry in doc.RootElement.EnumerateArray())
+            {
+                if (entry.TryGetProperty("mealId", out var id) && entry.TryGetProperty("image", out var image))
+                    map[id.GetString() ?? ""] = image.GetString() ?? "";
+            }
+        }
+        catch (JsonException) { /* Bad manifest: fall back to file names. */ }
+        return map;
+    }
 }

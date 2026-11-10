@@ -16,11 +16,12 @@ public sealed class LauncherForm : Form
         MinimumSize = new Size(780, 480);
         BackColor = Theme.Cream;
 
-        var layout = new TableLayoutPanel { Dock = DockStyle.Fill, Padding = new Padding(40), RowCount = 5 };
+        var layout = new TableLayoutPanel { Dock = DockStyle.Fill, Padding = new Padding(40), RowCount = 6 };
         layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 90));
         layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 70));
         layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 70));
         layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 70));
+        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 56));
         layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
 
         var title = Theme.Text("HEAVEN'S KARINDERYA", 26, Theme.Red, FontStyle.Bold);
@@ -50,8 +51,34 @@ public sealed class LauncherForm : Form
         layout.Controls.Add(both, 0, 1);
         layout.Controls.Add(kiosk, 0, 2);
         layout.Controls.Add(monitor, 0, 3);
-        layout.Controls.Add(folder, 0, 4);
+        var database = Theme.Text("Database: checking connection...", 11, Theme.Muted);
+        database.Dock = DockStyle.Fill;
+        database.TextAlign = ContentAlignment.MiddleCenter;
+        Shown += async (_, _) =>
+        {
+            var (ok, message) = await Task.Run(CheckDatabase);
+            if (IsDisposed) return;
+            database.Text = message;
+            database.ForeColor = ok ? Theme.Green : Theme.Red;
+        };
+
+        layout.Controls.Add(database, 0, 4);
+        layout.Controls.Add(folder, 0, 5);
         Controls.Add(layout);
+    }
+
+    // Runs the instructor's package query to confirm the database can be reached.
+    private static (bool ok, string message) CheckDatabase()
+    {
+        try
+        {
+            var packages = DatabaseStore.LoadPackages().Count;
+            return (true, $"Database connected: {packages} packages in package_tbl. Orders are saved to transactions_tbl.");
+        }
+        catch (Exception ex)
+        {
+            return (false, "Database not reachable: " + ex.Message);
+        }
     }
 
     private static LinkLabel LinkLabel(string text) => new()

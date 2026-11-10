@@ -3,5 +3,7 @@ OOP10 Final Laboratory Examination
 Repository: OOP10FEXLab
 
 Member 1 (Queue Monitor): Mark Jemiel P. Guevarra
+Member 2 (Kiosk): [ENTER FULL NAME]
+Member 3 (Integration): Sean Caling
 Member 2 (Kiosk): Christian Dominic D. Liwanag
 Member 3 (Integration): Heaven Caling

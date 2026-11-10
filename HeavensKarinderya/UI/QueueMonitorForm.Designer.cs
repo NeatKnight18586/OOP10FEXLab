@@ -408,8 +408,6 @@ partial class QueueMonitorForm
         servingNumber2.Text = "002";
         servingNumber2.TextAlign = ContentAlignment.MiddleCenter;
         _servingNumbers.Controls.Add(servingNumber2, 0, 1);
-        _preparingSlots = new Label[] { preparingNumber1, preparingNumber2, preparingNumber3, preparingNumber4, preparingNumber5, preparingNumber6, preparingNumber7, preparingNumber8 };
-        _servingSlots = new Label[] { servingNumber1, servingNumber2 };
         //
         // QueueMonitorForm
         //

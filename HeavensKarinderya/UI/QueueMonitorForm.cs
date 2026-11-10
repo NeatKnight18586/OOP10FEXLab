@@ -5,7 +5,7 @@ using HeavensKarinderya.Services;
 namespace HeavensKarinderya.UI;
 
 // Customer-facing queue board. F9 opens the staff controls.
-public sealed class QueueMonitorForm : Form
+public sealed partial class QueueMonitorForm : Form
 {
     private static readonly Color Maroon = Color.FromArgb(106, 32, 58);
     private static readonly Color Cream = Color.FromArgb(248, 236, 213);
@@ -13,18 +13,6 @@ public sealed class QueueMonitorForm : Form
     private static readonly Color Black = Color.FromArgb(13, 13, 13);
     private static readonly Color LightText = Color.FromArgb(255, 231, 208);
 
-    private readonly Label _brand = LabelText("HEAVEN'S KARINDERYA", 29, LightText, true);
-    private readonly Label _clock = LabelText("", 24, LightText, true);
-    private readonly Label _preparingTitle = LabelText("PREPARING", 30, Black, true);
-    private readonly Label _servingTitle = LabelText("NOW SERVING", 30, Black, true);
-    private readonly Label _pageInfo = LabelText("", 10, Black, false);
-    private readonly Label _servingPageInfo = LabelText("", 10, Black, false);
-    private readonly Label _footer = LabelText("Pakihintay ang inyong numero sa Now Serving.", 17, LightText, true);
-    private readonly Label _staffStatus = LabelText("F9 to hide staff controls", 11, Color.White, false);
-    private readonly TableLayoutPanel _preparingNumbers = new();
-    private readonly TableLayoutPanel _servingNumbers = new();
-    private readonly TableLayoutPanel _root = new();
-    private readonly TableLayoutPanel _staffControls = new();
     private readonly System.Windows.Forms.Timer _refreshTimer = new() { Interval = 900 };
 
     private List<OrderRecord> _preparing = new();
@@ -49,7 +37,11 @@ public sealed class QueueMonitorForm : Form
         KeyPreview = true;
         DoubleBuffered = true;
 
-        BuildLayout();
+        InitializeComponent();
+        _preparingSlots = new Label[] { preparingNumber1, preparingNumber2, preparingNumber3, preparingNumber4, preparingNumber5, preparingNumber6, preparingNumber7, preparingNumber8 };
+        _servingSlots = new Label[] { servingNumber1, servingNumber2 };
+        _callNextButton.Click += (_, _) => MoveOrder(TransactionStore.CallNext, "Preparing");
+        _completeButton.Click += (_, _) => MoveOrder(TransactionStore.CompleteOldest, "Now Serving");
         KeyDown += HandleShortcut;
         Resize += (_, _) => ApplyResponsiveSizing();
         Shown += (_, _) =>
@@ -86,118 +78,6 @@ public sealed class QueueMonitorForm : Form
             Font = new Font("Segoe UI", size, bold ? FontStyle.Bold : FontStyle.Regular),
             Margin = Padding.Empty
         };
-    }
-
-    private static Panel MakeRule()
-    {
-        return new Panel { Dock = DockStyle.Fill, BackColor = Black, Margin = Padding.Empty };
-    }
-
-    private void BuildLayout()
-    {
-        _root.Dock = DockStyle.Fill;
-        _root.ColumnCount = 1;
-        _root.RowCount = 4;
-        _root.Margin = Padding.Empty;
-        _root.Padding = Padding.Empty;
-        _root.RowStyles.Add(new RowStyle(SizeType.Absolute, 86));
-        _root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-        _root.RowStyles.Add(new RowStyle(SizeType.Absolute, 0));
-        _root.RowStyles.Add(new RowStyle(SizeType.Absolute, 48));
-
-        var header = new TableLayoutPanel
-        {
-            Dock = DockStyle.Fill, BackColor = Maroon,
-            ColumnCount = 2, Padding = new Padding(20, 0, 20, 0)
-        };
-        header.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 72));
-        header.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 28));
-        _brand.TextAlign = ContentAlignment.MiddleLeft;
-        _clock.TextAlign = ContentAlignment.MiddleRight;
-        header.Controls.Add(_brand, 0, 0);
-        header.Controls.Add(_clock, 1, 0);
-        _root.Controls.Add(header, 0, 0);
-
-        var body = new TableLayoutPanel
-        {
-            Dock = DockStyle.Fill, ColumnCount = 2,
-            BackColor = Black, Margin = Padding.Empty,
-            Padding = new Padding(0, 6, 0, 0)
-        };
-        body.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 65));
-        body.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 35));
-        body.Controls.Add(MakeSection(_preparingTitle, _pageInfo, _preparingNumbers, Cream), 0, 0);
-        body.Controls.Add(MakeSection(_servingTitle, _servingPageInfo, _servingNumbers, Orange), 1, 0);
-        _root.Controls.Add(body, 0, 1);
-
-        _staffControls.Dock = DockStyle.Fill;
-        _staffControls.BackColor = Color.FromArgb(45, 45, 45);
-        _staffControls.ColumnCount = 3;
-        _staffControls.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 40));
-        _staffControls.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 30));
-        _staffControls.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 30));
-        _staffControls.Padding = new Padding(12, 8, 12, 8);
-        _staffStatus.TextAlign = ContentAlignment.MiddleLeft;
-        _staffControls.Controls.Add(_staffStatus, 0, 0);
-        var call = MakeButton("CALL NEXT", Color.FromArgb(54, 121, 73));
-        var complete = MakeButton("COMPLETE OLDEST", Maroon);
-        call.Click += (_, _) => MoveOrder(TransactionStore.CallNext, "Preparing");
-        complete.Click += (_, _) => MoveOrder(TransactionStore.CompleteOldest, "Now Serving");
-        _staffControls.Controls.Add(call, 1, 0);
-        _staffControls.Controls.Add(complete, 2, 0);
-        _staffControls.Visible = false;
-        _root.Controls.Add(_staffControls, 0, 2);
-
-        var footerPanel = new Panel { Dock = DockStyle.Fill, BackColor = Black };
-        footerPanel.Controls.Add(_footer);
-        _root.Controls.Add(footerPanel, 0, 3);
-        Controls.Add(_root);
-    }
-
-    private static Button MakeButton(string label, Color color)
-    {
-        var button = new Button
-        {
-            Text = label, Dock = DockStyle.Fill,
-            BackColor = color, ForeColor = Color.White,
-            FlatStyle = FlatStyle.Flat,
-            Font = new Font("Segoe UI", 12, FontStyle.Bold),
-            Margin = new Padding(5, 0, 5, 0),
-            Cursor = Cursors.Hand,
-            UseVisualStyleBackColor = false
-        };
-        button.FlatAppearance.BorderSize = 0;
-        return button;
-    }
-
-    private static Control MakeSection(Label title, Label pageInfo, TableLayoutPanel numbers, Color background)
-    {
-        var section = new TableLayoutPanel
-        {
-            Dock = DockStyle.Fill, BackColor = background,
-            Margin = Padding.Empty, Padding = new Padding(20, 12, 20, 12),
-            RowCount = 3
-        };
-        section.RowStyles.Add(new RowStyle(SizeType.Absolute, 72));
-        section.RowStyles.Add(new RowStyle(SizeType.Absolute, 7));
-        section.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-
-        var heading = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2 };
-        heading.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 78));
-        heading.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 22));
-        title.TextAlign = ContentAlignment.MiddleLeft;
-        pageInfo.TextAlign = ContentAlignment.BottomRight;
-        heading.Controls.Add(title, 0, 0);
-        heading.Controls.Add(pageInfo, 1, 0);
-        section.Controls.Add(heading, 0, 0);
-        section.Controls.Add(MakeRule(), 0, 1);
-
-        numbers.Dock = DockStyle.Fill;
-        numbers.BackColor = background;
-        numbers.Margin = Padding.Empty;
-        numbers.Padding = new Padding(0, 12, 0, 0);
-        section.Controls.Add(numbers, 0, 2);
-        return section;
     }
 
     private void HandleShortcut(object? sender, KeyEventArgs e)
@@ -270,57 +150,47 @@ public sealed class QueueMonitorForm : Form
 
     private void DrawNumbers()
     {
-        DrawGrid(_preparingNumbers, _preparing, _preparingPage,
-            PreparingPerPage, 2, 4, false, "Wala pang naghihintay.");
-        DrawGrid(_servingNumbers, _serving, _servingPage,
-            ServingPerPage, 1, 2, true, "Wala pang handang order.");
+        DrawGrid(_preparingNumbers, _preparingSlots, _preparing, _preparingPage,
+            PreparingPerPage, false, "Wala pang naghihintay.");
+        DrawGrid(_servingNumbers, _servingSlots, _serving, _servingPage,
+            ServingPerPage, true, "Wala pang handang order.");
         _pageInfo.Text = PageCount(_preparing.Count, PreparingPerPage) > 1
             ? $"{_preparingPage + 1}/{PageCount(_preparing.Count, PreparingPerPage)}" : "";
         _servingPageInfo.Text = PageCount(_serving.Count, ServingPerPage) > 1
             ? $"{_servingPage + 1}/{PageCount(_serving.Count, ServingPerPage)}" : "";
     }
 
-    private static void DrawGrid(TableLayoutPanel grid, List<OrderRecord> orders,
-        int page, int pageSize, int columns, int rows, bool serving, string emptyMessage)
+    private void DrawGrid(TableLayoutPanel grid, Label[] slots,
+        List<OrderRecord> orders, int page, int pageSize, bool serving, string emptyMessage)
     {
-        grid.SuspendLayout();
-        try
+        var visible = orders.Skip(page * pageSize).Take(pageSize).ToArray();
+        for (int i = 0; i < slots.Length; i++)
         {
-            grid.Controls.Clear();
-            grid.ColumnStyles.Clear();
-            grid.RowStyles.Clear();
-            grid.ColumnCount = columns;
-            grid.RowCount = rows;
-            for (int c = 0; c < columns; c++)
-                grid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f / columns));
-            for (int r = 0; r < rows; r++)
-                grid.RowStyles.Add(new RowStyle(SizeType.Percent, 100f / rows));
-
-            if (orders.Count == 0)
+            slots[i].Text = i < visible.Length ? visible[i].Number.ToString("D3") : "";
+            slots[i].Visible = true;
+        }
+        // The empty message uses the first designer slot rather than a runtime control.
+        if (orders.Count == 0)
+        {
+            slots[0].Text = emptyMessage;
+            slots[0].Font = new Font("Segoe UI", 20F);
+        }
+        else
+        {
+            var cellWidth = Math.Max(120f, grid.ClientSize.Width / (float)(serving ? 1 : 2));
+            var cellHeight = Math.Max(100f, grid.ClientSize.Height / (float)(serving ? 2 : 4));
+            var size = Math.Clamp(Math.Min(cellWidth / (3f * .67f),
+                cellHeight * (serving ? .72f : .63f)), 30f, serving ? 125f : 76f);
+            foreach (var slot in slots)
             {
-                var empty = LabelText(emptyMessage, 23, Black, false);
-                grid.Controls.Add(empty, 0, 0);
-                grid.SetColumnSpan(empty, columns);
-                grid.SetRowSpan(empty, rows);
-                return;
-            }
-
-            var visible = orders.Skip(page * pageSize).Take(pageSize).ToArray();
-            var cellWidth = Math.Max(120f, (grid.ClientSize.Width - grid.Padding.Horizontal) / (float)columns);
-            var cellHeight = Math.Max(100f, (grid.ClientSize.Height - grid.Padding.Vertical) / (float)rows);
-
-            for (int i = 0; i < visible.Length; i++)
-            {
-                string number = visible[i].Number.ToString("D3");
-                var byWidth = cellWidth / (number.Length * .67f);
-                var byHeight = cellHeight * (serving ? .72f : .63f);
-                var size = Math.Clamp(Math.Min(byWidth, byHeight), 30f, serving ? 125f : 76f);
-                var text = LabelText(number, size, Black, true);
-                text.Margin = Padding.Empty;
-                grid.Controls.Add(text, i / rows, i % rows);
+                if (Math.Abs(slot.Font.Size - size) > 1)
+                {
+                    var old = slot.Font;
+                    slot.Font = new Font("Segoe UI", size, FontStyle.Bold);
+                    old.Dispose();
+                }
             }
         }
-        finally { grid.ResumeLayout(true); }
     }
 
     private void MoveOrder(Func<int?> action, string from)

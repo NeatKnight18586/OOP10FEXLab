@@ -17,4 +17,18 @@
     <!-- Same MySQL connector the instructor's DBConProj sample uses. -->
     <PackageReference Include="MySql.Data" Version="26.10.0" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Update="UI/KioskForm.Designer.cs">
+      <DependentUpon>KioskForm.cs</DependentUpon>
+    </Compile>
+    <Compile Update="UI/QueueMonitorForm.Designer.cs">
+      <DependentUpon>QueueMonitorForm.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="UI/KioskForm.resx">
+      <DependentUpon>KioskForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="UI/QueueMonitorForm.resx">
+      <DependentUpon>QueueMonitorForm.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
 </Project>

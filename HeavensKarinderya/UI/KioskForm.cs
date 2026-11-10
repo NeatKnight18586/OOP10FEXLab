@@ -3,134 +3,51 @@ using HeavensKarinderya.Services;
 
 namespace HeavensKarinderya.UI;
 
-public class KioskForm : Form
+public partial class KioskForm : Form
 {
-    static readonly Color Gold = Color.FromArgb(212, 160, 23);
-
-    readonly FlowLayoutPanel _sidebar = new()
-    {
-        Dock = DockStyle.Left,
-        Width = 210,
-        BackColor = Color.White,
-        FlowDirection = FlowDirection.TopDown,
-        WrapContents = false,
-        Padding = new Padding(10)
-    };
-    readonly FlowLayoutPanel _meals = new()
-    {
-        Dock = DockStyle.Fill,
-        AutoScroll = true,
-        Padding = new Padding(12)
-    };
-    List<MenuMeal> _catalog = new();
-    readonly ComboBox _cboMeals = new()
-    {
-        Name = "cboMeals",
-        Dock = DockStyle.Fill,
-        DropDownStyle = ComboBoxStyle.DropDownList,
-        Font = new Font("Segoe UI", 11),
-        DisplayMember = nameof(MenuMeal.Name),
-        AccessibleName = "Selected meal"
-    };
-    readonly Button _addOrder = Theme.Action("ADD ORDER", Theme.Red);
-
-    readonly Dictionary<string, OrderItem> _cart = new();
-    readonly FlowLayoutPanel _cartLines = new()
-    {
-        Dock = DockStyle.Fill,
-        FlowDirection = FlowDirection.TopDown,
-        WrapContents = false,
-        AutoScroll = true
-    };
-    readonly Label _total = new()
-    {
-        Text = "Total: " + Theme.Pesos(0),
-        Dock = DockStyle.Bottom,
-        Height = 55,
-        Font = new Font("Segoe UI", 18, FontStyle.Bold),
-        ForeColor = Theme.Red,
-        TextAlign = ContentAlignment.MiddleCenter
-    };
+    private List<MenuMeal> _catalog = new();
+    private readonly Dictionary<string, OrderItem> _cart = new();
+    private readonly Dictionary<string, Image?> _photos = new();
+    private static readonly Size PhotoSize = new(230, 130);
 
     public KioskForm()
     {
-        Text = "Heaven's Karinderya - Kiosk";
-        ClientSize = new Size(1200, 800);
-        StartPosition = FormStartPosition.CenterScreen;
-        BackColor = Theme.Cream;
-
-        var header = new Label
-        {
-            Text = "Heaven's Karinderya",
-            Dock = DockStyle.Top,
-            Height = 80,
-            BackColor = Theme.Red,
-            ForeColor = Gold,
-            Font = new Font("Georgia", 28, FontStyle.Bold),
-            TextAlign = ContentAlignment.MiddleCenter
-        };
-        var cart = new TableLayoutPanel
-        {
-            Dock = DockStyle.Right,
-            Width = 360,
-            BackColor = Color.White,
-            Padding = new Padding(12),
-            ColumnCount = 1,
-            RowCount = 5
-        };
-        cart.RowStyles.Add(new RowStyle(SizeType.Absolute, 56));
-        cart.RowStyles.Add(new RowStyle(SizeType.Absolute, 130));
-        cart.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-        cart.RowStyles.Add(new RowStyle(SizeType.Absolute, 65));
-        cart.RowStyles.Add(new RowStyle(SizeType.Absolute, 68));
-
-        var cartTitle = new Label
-        {
-            Text = "YOUR ORDER",
-            Dock = DockStyle.Fill,
-            Font = new Font("Segoe UI", 18, FontStyle.Bold),
-            ForeColor = Theme.Ink,
-            TextAlign = ContentAlignment.MiddleCenter
-        };
-
-        var chooseMeal = new TableLayoutPanel { Dock = DockStyle.Fill, RowCount = 3, Padding = new Padding(0, 0, 0, 8) };
-        chooseMeal.RowStyles.Add(new RowStyle(SizeType.Absolute, 25));
-        chooseMeal.RowStyles.Add(new RowStyle(SizeType.Absolute, 43));
-        chooseMeal.RowStyles.Add(new RowStyle(SizeType.Absolute, 51));
-        var comboLabel = new Label
-        {
-            Text = "CURRENT SELECTED ITEM",
-            Dock = DockStyle.Fill,
-            Font = new Font("Segoe UI", 9, FontStyle.Bold),
-            ForeColor = Theme.Ink
-        };
-        _addOrder.Dock = DockStyle.Fill;
-        _addOrder.Enabled = false;
-        Theme.Flat(_addOrder);
-        _cboMeals.SelectedIndexChanged += (_, _) => _addOrder.Enabled = _cboMeals.SelectedItem is MenuMeal;
+        InitializeComponent();
+        _categoryButtons = new Button[] { categoryButton1, categoryButton2, categoryButton3, categoryButton4, categoryButton5 };
+        _mealCards = new Panel[] { mealCard1, mealCard2, mealCard3, mealCard4, mealCard5, mealCard6, mealCard7, mealCard8, mealCard9, mealCard10 };
+        _mealPhotos = new PictureBox[] { mealPhoto1, mealPhoto2, mealPhoto3, mealPhoto4, mealPhoto5, mealPhoto6, mealPhoto7, mealPhoto8, mealPhoto9, mealPhoto10 };
+        _mealIcons = new Label[] { mealIcon1, mealIcon2, mealIcon3, mealIcon4, mealIcon5, mealIcon6, mealIcon7, mealIcon8, mealIcon9, mealIcon10 };
+        _mealNames = new Label[] { mealName1, mealName2, mealName3, mealName4, mealName5, mealName6, mealName7, mealName8, mealName9, mealName10 };
+        _mealDescriptions = new Label[] { mealDescription1, mealDescription2, mealDescription3, mealDescription4, mealDescription5, mealDescription6, mealDescription7, mealDescription8, mealDescription9, mealDescription10 };
+        _mealPrices = new Label[] { mealPrice1, mealPrice2, mealPrice3, mealPrice4, mealPrice5, mealPrice6, mealPrice7, mealPrice8, mealPrice9, mealPrice10 };
+        _mealButtons = new Button[] { mealSelect1, mealSelect2, mealSelect3, mealSelect4, mealSelect5, mealSelect6, mealSelect7, mealSelect8, mealSelect9, mealSelect10 };
+        _orderRows = new Panel[] { orderRow1, orderRow2, orderRow3, orderRow4, orderRow5, orderRow6, orderRow7, orderRow8, orderRow9, orderRow10 };
+        _orderTexts = new Label[] { orderText1, orderText2, orderText3, orderText4, orderText5, orderText6, orderText7, orderText8, orderText9, orderText10 };
+        _orderQuantities = new Label[] { orderQuantity1, orderQuantity2, orderQuantity3, orderQuantity4, orderQuantity5, orderQuantity6, orderQuantity7, orderQuantity8, orderQuantity9, orderQuantity10 };
+        _orderMinusButtons = new Button[] { orderMinus1, orderMinus2, orderMinus3, orderMinus4, orderMinus5, orderMinus6, orderMinus7, orderMinus8, orderMinus9, orderMinus10 };
+        _orderPlusButtons = new Button[] { orderPlus1, orderPlus2, orderPlus3, orderPlus4, orderPlus5, orderPlus6, orderPlus7, orderPlus8, orderPlus9, orderPlus10 };
+        _orderRemoveButtons = new Button[] { orderRemove1, orderRemove2, orderRemove3, orderRemove4, orderRemove5, orderRemove6, orderRemove7, orderRemove8, orderRemove9, orderRemove10 };
+        _cboMeals.SelectedIndexChanged += (_, _) =>
+            _addOrder.Enabled = _cboMeals.SelectedItem is MenuMeal;
         _addOrder.Click += (_, _) => AddSelectedMeal();
-        chooseMeal.Controls.Add(comboLabel, 0, 0);
-        chooseMeal.Controls.Add(_cboMeals, 0, 1);
-        chooseMeal.Controls.Add(_addOrder, 0, 2);
-
-        var placeOrder = Theme.Action("PLACE ORDER", Theme.Green);
-        placeOrder.Dock = DockStyle.Fill;
-        Theme.Flat(placeOrder);
-        placeOrder.Click += (_, _) => PlaceOrder();
-
-        _cartLines.Dock = DockStyle.Fill;
-        _total.Dock = DockStyle.Fill;
-        cart.Controls.Add(cartTitle, 0, 0);
-        cart.Controls.Add(chooseMeal, 0, 1);
-        cart.Controls.Add(_cartLines, 0, 2);
-        cart.Controls.Add(_total, 0, 3);
-        cart.Controls.Add(placeOrder, 0, 4);
-
-        Controls.Add(_meals);
-        Controls.Add(_sidebar);
-        Controls.Add(cart);
-        Controls.Add(header);
-
+        _placeOrder.Click += (_, _) => PlaceOrder();
+        for (int i = 0; i < _orderRows.Length; i++)
+        {
+            _orderMinusButtons[i].Click += (sender, _) =>
+            {
+                if (((Button)sender!).Tag is string id) ChangeQuantity(id, -1);
+            };
+            _orderPlusButtons[i].Click += (sender, _) =>
+            {
+                if (((Button)sender!).Tag is string id) ChangeQuantity(id, 1);
+            };
+            _orderRemoveButtons[i].Click += (sender, _) =>
+            {
+                if (((Button)sender!).Tag is string id) RemoveMeal(id);
+            };
+        }
+        if (System.ComponentModel.LicenseManager.UsageMode != System.ComponentModel.LicenseUsageMode.Designtime)
+            RefreshCart();
         Shown += (_, _) => LoadMeals();
     }
 
@@ -143,17 +60,20 @@ public class KioskForm : Form
             return;
         }
 
-        var names = new[] { "All" }.Concat(_catalog.Select(m => m.Category).Distinct());
-        foreach (var name in names)
+        foreach (var button in _categoryButtons)
         {
-            var category = name;
-            var button = Theme.Action(category, Theme.Ink);
-            button.Size = new Size(185, 60);
-            button.Margin = new Padding(0, 0, 0, 8);
-            Theme.Flat(button);
+            var category = button.Tag?.ToString() ?? "All";
             button.Click += (_, _) => ShowCategory(category);
-            _sidebar.Controls.Add(button);
         }
+        for (int i = 0; i < _mealCards.Length; i++)
+        {
+            int index = i;
+            _mealButtons[i].Click += (_, _) =>
+            {
+                if (index < _catalog.Count) SelectMeal(_catalog[index]);
+            };
+        }
+        BindMealCards();
         _cboMeals.BeginUpdate();
         _cboMeals.Items.Clear();
         foreach (var meal in _catalog)
@@ -163,93 +83,31 @@ public class KioskForm : Form
         ShowCategory("All");
     }
 
+    void BindMealCards()
+    {
+        for (int i = 0; i < _mealCards.Length; i++)
+        {
+            var visible = i < _catalog.Count;
+            _mealCards[i].Visible = visible;
+            if (!visible) continue;
+            var meal = _catalog[i];
+            _mealNames[i].Text = meal.Name;
+            _mealPrices[i].Text = Theme.Pesos(meal.Price);
+            _mealDescriptions[i].Text = meal.Description;
+            var photo = LoadPhoto(meal.Id);
+            _photos[meal.Id] = photo;
+            _mealPhotos[i].Image = photo;
+            _mealPhotos[i].Visible = photo is not null;
+            _mealIcons[i].Text = meal.Icon;
+            _mealIcons[i].Visible = photo is null;
+        }
+    }
+
     void ShowCategory(string category)
     {
-        _meals.Controls.Clear();
-        foreach (var meal in _catalog.Where(m => category == "All" || m.Category == category))
-            _meals.Controls.Add(MakeCard(meal));
-    }
-
-    Panel MakeCard(MenuMeal meal)
-    {
-        var card = new Panel
-        {
-            Size = new Size(230, 310),
-            BackColor = Color.White,
-            Margin = new Padding(10)
-        };
-
-        var add = Theme.Action("SELECT MEAL", Theme.Red);
-        add.Dock = DockStyle.Bottom;
-        add.Height = 45;
-        Theme.Flat(add);
-        add.Click += (_, _) => SelectMeal(meal);
-
-        var price = new Label
-        {
-            Text = Theme.Pesos(meal.Price),
-            Font = new Font("Segoe UI", 14, FontStyle.Bold),
-            ForeColor = Theme.Red,
-            Dock = DockStyle.Top,
-            Height = 32,
-            TextAlign = ContentAlignment.MiddleCenter
-        };
-        var description = new Label
-        {
-            Text = meal.Description,
-            Font = new Font("Segoe UI", 9),
-            ForeColor = Color.Gray,
-            Dock = DockStyle.Top,
-            Height = 48,
-            TextAlign = ContentAlignment.TopCenter
-        };
-        var name = new Label
-        {
-            Text = meal.Name,
-            Font = new Font("Segoe UI", 12, FontStyle.Bold),
-            Dock = DockStyle.Top,
-            Height = 32,
-            TextAlign = ContentAlignment.MiddleCenter
-        };
-        var icon = MakePhoto(meal);
-
-        card.Controls.Add(add);
-        card.Controls.Add(price);
-        card.Controls.Add(description);
-        card.Controls.Add(name);
-        card.Controls.Add(icon);
-        return card;
-    }
-
-    // Food photo from Data/Images. Keeps the emoji placeholder if the photo is missing.
-    readonly Dictionary<string, Image?> _photos = new();
-    static readonly Size PhotoSize = new(230, 130);
-
-    Control MakePhoto(MenuMeal meal)
-    {
-        if (!_photos.TryGetValue(meal.Id, out var photo))
-        {
-            photo = LoadPhoto(meal.Id);
-            _photos[meal.Id] = photo;
-        }
-
-        if (photo is null)
-            return new Label
-            {
-                Text = meal.Icon,
-                Font = new Font("Segoe UI Emoji", 36),
-                Dock = DockStyle.Top,
-                Height = PhotoSize.Height,
-                TextAlign = ContentAlignment.MiddleCenter
-            };
-
-        return new PictureBox
-        {
-            Image = photo,
-            Dock = DockStyle.Top,
-            Height = PhotoSize.Height,
-            SizeMode = PictureBoxSizeMode.StretchImage
-        };
+        for (int i = 0; i < _mealCards.Length; i++)
+            _mealCards[i].Visible = i < _catalog.Count &&
+                (category == "All" || _catalog[i].Category == category);
     }
 
     // Loads the photo without locking the file, cropped to fill the card's photo area.
@@ -326,47 +184,20 @@ public class KioskForm : Form
 
     void RefreshCart()
     {
-        _cartLines.Controls.Clear();
-        foreach (var item in _cart.Values)
-            _cartLines.Controls.Add(MakeCartLine(item));
+        var items = _cart.Values.ToArray();
+        for (int i = 0; i < _orderRows.Length; i++)
+        {
+            bool hasItem = i < items.Length;
+            _orderRows[i].Visible = hasItem;
+            if (!hasItem) continue;
+            var item = items[i];
+            _orderTexts[i].Text = item.Name + "\\n" + Theme.Pesos(item.LineTotal);
+            _orderQuantities[i].Text = item.Quantity.ToString();
+            _orderMinusButtons[i].Tag = item.MealId;
+            _orderPlusButtons[i].Tag = item.MealId;
+            _orderRemoveButtons[i].Tag = item.MealId;
+        }
         _total.Text = "Total: " + Theme.Pesos(_cart.Values.Sum(i => i.LineTotal));
-    }
-
-    Panel MakeCartLine(OrderItem item)
-    {
-        var id = item.MealId;
-        var line = new Panel { Size = new Size(300, 85), Margin = new Padding(0, 0, 0, 8) };
-
-        var minus = new Button { Text = "-", Size = new Size(40, 32), Location = new Point(0, 48) };
-        var qty = new Label
-        {
-            Text = item.Quantity.ToString(),
-            Size = new Size(40, 32),
-            Location = new Point(45, 48),
-            Font = new Font("Segoe UI", 12, FontStyle.Bold),
-            TextAlign = ContentAlignment.MiddleCenter
-        };
-        var plus = new Button { Text = "+", Size = new Size(40, 32), Location = new Point(90, 48) };
-        var remove = new Button { Text = "Remove", Size = new Size(90, 32), Location = new Point(150, 48) };
-
-        minus.Click += (_, _) => ChangeQuantity(id, -1);
-        plus.Click += (_, _) => ChangeQuantity(id, 1);
-        remove.Click += (_, _) => RemoveMeal(id);
-
-        var text = new Label
-        {
-            Text = item.Name + "\n" + Theme.Pesos(item.LineTotal),
-            Dock = DockStyle.Top,
-            Height = 44,
-            Font = new Font("Segoe UI", 10, FontStyle.Bold)
-        };
-
-        line.Controls.Add(minus);
-        line.Controls.Add(qty);
-        line.Controls.Add(plus);
-        line.Controls.Add(remove);
-        line.Controls.Add(text);
-        return line;
     }
 
     void PlaceOrder()
